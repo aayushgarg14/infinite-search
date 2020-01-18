@@ -15,37 +15,12 @@
   color: white;
 }
 
-.searchContainer {
-  width: 500px
-}
-
 .bodyContainer {
   padding-top: 160px;
   padding-left: 10px;
+  padding-right: 10px;
 }
 
-.imageContainer {
-  /* padding-top: 250px; */
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  /* padding: 16px; */
-  /* justify-content: space-between */
-}
-
-.imageItemContainer {
-  position: relative;
-  border: 1px solid #eee;
-  margin: 8px;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
-  display: flex;
-  width: 31%;
-  background-color: #FFF
-}
-
-img {
-  object-fit: contain;
-  height: 300px;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-  margin: 8px;
+.modalImg {
+  border-radius: 5px;
 }

@@ -1,0 +1,24 @@
+.modalContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    background-color: #fff;
+    border: 1px solid #EEE;
+    border-radius: 5px;
+}
+
+.modalHeader {
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: #FFF;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    align-items: center;
+}

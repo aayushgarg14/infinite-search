@@ -1,9 +1,3 @@
-export const myInitObject = {
-    ROOT_URL: 'https://www.flickr.com/services/rest/?api_key=ddfad6c5fa65ed4f69990448c09c1ee3&format=json&nojsoncallback=1&per_page=20'
-}
-
-// https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=6f1eda5857c0c6b7206ae64da2d5304a&format=json&nojsoncallback=1&api_sig=3637d7e0cabce489ce32baabc24bdf61
-// https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=6f1eda5857c0c6b7206ae64da2d5304a&text=dog&format=json&nojsoncallback=1&api_sig=f35e00633322e5b86f3fb5149b68c837
 export const validateEmail = email => {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());

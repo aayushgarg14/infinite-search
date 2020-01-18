@@ -5,3 +5,30 @@
     justify-content: center; 
     align-items: center;
 }
+
+.imageItemContainer {
+    position: relative;
+    border: 1px solid #eee;
+    margin: 8px;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+    display: flex;
+    width: 31%;
+    background-color: #FFF
+  }
+
+  .imageContainer {
+    /* padding-top: 250px; */
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    /* padding: 16px; */
+    /* justify-content: space-between */
+  }
+  
+  .imageContainer>img {
+    cursor: pointer;
+    object-fit: contain;
+    height: 300px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+    margin: 8px;
+  }

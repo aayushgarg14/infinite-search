@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { myInitObject } from './helperFunc';
+import { myInitObject } from './constants';
 
 
 export const getAllPics = (page) => {
@@ -11,7 +11,6 @@ export const getAllPics = (page) => {
 
 const callApi = async (endpoint, options = { method: 'GET' }) => {
     let url = `${myInitObject.ROOT_URL}${endpoint}`
-    console.log('what is the rul', url)
     try {
         const response = await axios({
             url,
