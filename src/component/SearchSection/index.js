@@ -12,22 +12,32 @@ export default ({
     searchedQueries,
     toggleMenuHandler,
     addItemHandler,
-    updateInputHandler
+    clearStorageHandler,
+    updateInputHandler,
+    selectQueryHandler
 }) => (
         <div className="searchContainer">
             <Dropdown
                 visible={visible}
                 onVisibleChange={toggleMenuHandler}
                 overlay={<Menu>
-                    {searchedQueries.map((query, index) => (
-                        <Menu.Item key={index}>
-                            <a>{query}</a>
-                        </Menu.Item>
-                    ))}
-                    <Menu.Divider />
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', paddingRight: 5 }}>
-                        <Button type="danger">Clear</Button>
-                    </div>
+                    {searchedQueries.length
+                        ? searchedQueries.map((query, index) => (
+                            <Menu.Item onClick={() => selectQueryHandler(query)} key={index}>
+                                <a>{query}</a>
+                            </Menu.Item>
+                        ))
+                        : <Menu.Item>
+                            <a>No browser history</a>
+                        </Menu.Item>}
+                    {searchedQueries.length
+                        ? <>
+                            <Menu.Divider />
+                            <div className="clearBtn">
+                                <Button onClick={clearStorageHandler} type="danger">Clear</Button>
+                            </div>
+                        </>
+                        : null}
                 </Menu>}
                 trigger={['click']}>
                 <Search

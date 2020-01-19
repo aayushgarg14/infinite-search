@@ -24,3 +24,10 @@
 .modalImg {
   border-radius: 5px;
 }
+
+.emptyText {
+  display: flex;
+  justify-content: center;
+  height: 40vh;
+  align-items: center;
+}

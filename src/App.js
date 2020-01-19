@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 
 
 import './App.css';
-import { getAllPics } from './utils/axiosRequest';
+import { getAllPics, getSearchedPics } from './utils/axiosRequest';
 import ListSection from './component/ListSection';
 import ModalSection from './component/ModalSection';
 import SearchSection from './component/SearchSection';
@@ -13,7 +14,7 @@ export class App extends Component {
     photos: [],
     selectedPhoto: {},
     searchedQuery: '',
-    searchedQueries: JSON.parse(localStorage.getItem('searchedQueries')),
+    searchedQueries: JSON.parse(localStorage.getItem('searchedQueries')) || [],
     visible: false,
     isModal: false
   }
@@ -21,6 +22,7 @@ export class App extends Component {
   constructor(props) {
     super(props)
     window.addEventListener("scroll", this.closeHandler);
+    this.debounceSearch = _.debounce(this.callSearchApi, 300)
   }
 
   async componentDidMount() {
@@ -39,8 +41,26 @@ export class App extends Component {
     }
   }
 
-  updateInputHandler = (value) => {
-    this.setState({ searchedQuery: value.target.value })
+  callSearchApi = async () => {
+    const { searchedQuery, page, photos } = this.state
+    const response = await getSearchedPics(searchedQuery, page)
+    if (!response.error) {
+      this.setState({
+        photos: page === 1
+          ? response.data.photo
+          : [...photos, ...response.data.photo]
+      })
+    }
+
+  }
+
+  updateInputHandler = async (value) => {
+    let searchedQuery = value.target.value
+    this.setState({ searchedQuery, page: 1 })
+    if (searchedQuery === '') {
+      return this.callApi()
+    }
+    this.debounceSearch()
   }
 
   toggleMenuHandler = () => {
@@ -48,7 +68,10 @@ export class App extends Component {
   };
 
   closeHandler = () => {
-    this.setState({ visible: false, isModal: false });
+    const { visible, isModal } = this.state
+    if (visible || isModal) {
+      this.setState({ visible: false, isModal: false });
+    }
   };
 
   toggleModalHandler = (selectedPhoto) => {
@@ -59,10 +82,29 @@ export class App extends Component {
     this.setState({ page: this.state.page + 1 }, async () => await this.callApi())
   }
 
-  addItemHandler = () => {
+  selectQueryHandler = async (query) => {
+    this.toggleMenuHandler()
+    this.setState({ searchedQuery: query }, async () => await this.callSearchApi())
+  }
+
+  clearStorageHandler = () => {
+    localStorage.clear()
+  }
+
+  addItemHandler = async () => {
     const { searchedQueries, searchedQuery } = this.state
-    this.setState({ searchedQueries: [...searchedQueries, searchedQuery] })
-    localStorage.setItem('searchedQueries', JSON.stringify([...searchedQueries, searchedQuery]))
+    let updateSearchedQueries = [searchedQuery, ...searchedQueries]
+    if(searchedQueries.includes(searchedQuery)) {
+      return this.toggleMenuHandler()
+    }
+
+    if (searchedQueries.length === 5) {
+      updateSearchedQueries = [searchedQuery, ...searchedQueries.splice(-1,1)]
+    }
+
+    this.setState({ searchedQueries: updateSearchedQueries })
+    localStorage.setItem('searchedQueries', JSON.stringify(updateSearchedQueries))
+    this.toggleMenuHandler()
   }
 
   refreshHandler = () => {
@@ -92,6 +134,8 @@ export class App extends Component {
         searchedQuery={searchedQuery}
         toggleMenuHandler={this.toggleMenuHandler}
         updateInputHandler={this.updateInputHandler}
+        clearStorageHandler={this.clearStorageHandler}
+        selectQueryHandler={this.selectQueryHandler}
         addItemHandler={this.addItemHandler} />
     )
   }
@@ -106,10 +150,13 @@ export class App extends Component {
           {this.renderSearchSection()}
         </div>
         <div className="bodyContainer">
-          <ListSection
-            photos={photos}
-            toggleModalHandler={this.toggleModalHandler}
-            loadMoreHandler={this.loadMoreHandler} />
+          {/* {photos.length
+            ?  */}
+            <ListSection
+              photos={photos}
+              toggleModalHandler={this.toggleModalHandler}
+              loadMoreHandler={this.loadMoreHandler} />
+            {/* : <div className="emptyText">No data available</div>} */}
         </div>
         {isModal ? this.renderModalSection() : null}
       </div>
