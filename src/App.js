@@ -14,7 +14,7 @@ export class App extends Component {
     photos: [],
     selectedPhoto: {},
     searchedQuery: '',
-    searchedQueries: JSON.parse(localStorage.getItem('searchedQueries')) || [],
+    searchedQueries: JSON.parse(localStorage.getItem('searchedQueries')) || [], // Initially searchedQueries will be null
     visible: false,
     isModal: false,
     isEmpty: false,
@@ -42,7 +42,7 @@ export class App extends Component {
   callApi = async () => {
     const { page, photos } = this.state
     const response = await getAllPics(page)
-    if (!response.error) {
+    if (!response.error) { // check for error in response from the API call
       this.setState({
         photos: page === 1
           ? response.data.photo
@@ -90,6 +90,7 @@ export class App extends Component {
     this.setState({
       page: page + 1
     }, async () => {
+      /** If no searched parameter, it will call getRecent api */
       if (searchedQuery === '') await this.callApi()
       else await this.callSearchApi()
     })
@@ -107,6 +108,7 @@ export class App extends Component {
   updateInputHandler = async (value) => {
     let searchedQuery = value.target.value
     this.setState({ searchedQuery, page: 1 }, async () => {
+      /** If no searched parameter, it will call getRecent api */
       if (searchedQuery === '') {
         return this.callApi()
       }
@@ -114,6 +116,7 @@ export class App extends Component {
     })
   }
 
+  /** Function to search query from browser history */
   selectQueryHandler = async (query) => {
     this.toggleMenuHandler()
     this.setState({ searchedQuery: query, page: 1 }, async () => await this.callSearchApi())

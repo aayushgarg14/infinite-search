@@ -1,6 +1,6 @@
 ## Infinite Search
 
-A search web app using Flickr API.
+A web app to search and view images using Flickr API. Images are displayed as the user searches, with the API being debounced for better browsing.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
