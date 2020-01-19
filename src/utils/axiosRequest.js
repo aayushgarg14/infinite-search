@@ -29,10 +29,7 @@ const callApi = async (endpoint, options = { method: 'GET' }) => {
             headers: { 'Content-Type': 'application/json' }
         })
 
-        const data = response.data
-
-        console.log('data', data, 'url', endpoint);
-        
+        const data = response.data        
 
         if (data.stat === 'fail') {
             return {

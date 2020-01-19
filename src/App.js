@@ -7,6 +7,7 @@ import { getAllPics, getSearchedPics } from './utils/axiosRequest';
 import ListSection from './component/ListSection';
 import ModalSection from './component/ModalSection';
 import SearchSection from './component/SearchSection';
+import { toLowerCaseString } from './utils/helperFunc';
 
 export class App extends Component {
   state = {
@@ -110,7 +111,6 @@ export class App extends Component {
     this.setState({ searchedQuery, page: 1, isError: false }, async () => {
       /** If no searched parameter, it will call getRecent api */
       if (searchedQuery === '') {
-        console.log('is it coming here');
         this.debounceSearch.cancel()
         return this.callApi()
       }
@@ -119,9 +119,18 @@ export class App extends Component {
   }
 
   /** Function to search query from browser history */
-  selectQueryHandler = async (query) => {
+  selectQueryHandler = async (selectedQuery) => {
     this.toggleMenuHandler()
-    this.setState({ searchedQuery: query, page: 1 }, async () => await this.callSearchApi())
+    let updateSearchedQueries = [
+      selectedQuery,
+      ...this.state.searchedQueries.filter(query => query !== selectedQuery)
+    ]
+
+    this.setState({
+      searchedQuery: selectedQuery,
+      searchedQueries: updateSearchedQueries,
+      page: 1,
+    }, async () => await this.callSearchApi())
   }
 
   clearStorageHandler = () => {
@@ -131,19 +140,29 @@ export class App extends Component {
 
   addItemHandler = async () => {
     const { searchedQueries, searchedQuery } = this.state
-    let updateSearchedQueries = [searchedQuery, ...searchedQueries]
-    if (searchedQueries.includes(searchedQuery)) {
-      return this.toggleMenuHandler()
+    let newQuery = toLowerCaseString(searchedQuery)
+    let updateSearchedQueries = [newQuery, ...searchedQueries]
+
+    this.toggleMenuHandler()
+
+    /** Updates the browser history by changing the searched item position */
+    if (searchedQueries.includes(newQuery)) {
+      updateSearchedQueries = [
+        newQuery,
+        ...searchedQueries.filter(query => query !== newQuery)
+      ]
     }
 
     /** Restrict the browser history to upto 5 latest searches */
     if (searchedQueries.length === 5) {
-      updateSearchedQueries = [searchedQuery, ...searchedQueries.splice(-1, 1)]
+      updateSearchedQueries = [
+        newQuery,
+        ...searchedQueries.slice(0, searchedQueries.length - 1)
+      ]
     }
 
     this.setState({ searchedQueries: updateSearchedQueries })
     localStorage.setItem('searchedQueries', JSON.stringify(updateSearchedQueries))
-    this.toggleMenuHandler()
   }
 
   /**
@@ -169,13 +188,13 @@ export class App extends Component {
     return (
       <div className="bodyContainer">
         {isError
-        ?  <div className="emptyText">Something went wrong.</div>
-        :!isEmpty
-          ? <ListSection
-            photos={photos}
-            toggleModalHandler={this.toggleModalHandler}
-            loadMoreHandler={this.loadMoreHandler} />
-          : <div className="emptyText">No data available</div>}
+          ? <div className="emptyText">Something went wrong.</div>
+          : !isEmpty
+            ? <ListSection
+              photos={photos}
+              toggleModalHandler={this.toggleModalHandler}
+              loadMoreHandler={this.loadMoreHandler} />
+            : <div className="emptyText">No data available</div>}
       </div>
     )
   }
