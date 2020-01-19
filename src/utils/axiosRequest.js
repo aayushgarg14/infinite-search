@@ -10,7 +10,7 @@ export const getAllPics = (page) => {
 
 export const getSearchedPics = (text, page) => {
     page = page === undefined ? 1 : page
-    let endpoint = `&method=flickr.photos.search&api_key=45c5cf2e84996118bb8e9e22feb18a0a&text=${text}&page=${page}`
+    let endpoint = `&method=flickr.photos.search&api_key=d6d5c007466cdf789c5c26e7843e82b6&text=${text}&page=${page}`
     return callApi(endpoint)
 }
 
