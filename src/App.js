@@ -16,7 +16,8 @@ export class App extends Component {
     searchedQuery: '',
     searchedQueries: JSON.parse(localStorage.getItem('searchedQueries')) || [],
     visible: false,
-    isModal: false
+    isModal: false,
+    isEmpty: false
   }
 
   constructor(props) {
@@ -36,19 +37,22 @@ export class App extends Component {
       this.setState({
         photos: page === 1
           ? response.data.photo
-          : [...photos, ...response.data.photo]
+          : [...photos, ...response.data.photo],
+        isEmpty: (page === 1 && !response.data.photo.length) ? true : false
       })
     }
   }
 
   callSearchApi = async () => {
     const { searchedQuery, page, photos } = this.state
+    this.setState({ isEmpty: false })
     const response = await getSearchedPics(searchedQuery, page)
     if (!response.error) {
       this.setState({
         photos: page === 1
           ? response.data.photo
-          : [...photos, ...response.data.photo]
+          : [...photos, ...response.data.photo],
+        isEmpty: (page === 1 && !response.data.photo.length) ? true : false
       })
     }
 
@@ -56,11 +60,12 @@ export class App extends Component {
 
   updateInputHandler = async (value) => {
     let searchedQuery = value.target.value
-    this.setState({ searchedQuery, page: 1 })
-    if (searchedQuery === '') {
-      return this.callApi()
-    }
-    this.debounceSearch()
+    this.setState({ searchedQuery, page: 1 }, async () => {
+      if (searchedQuery === '') {
+        return this.callApi()
+      }
+      this.debounceSearch()
+    })
   }
 
   toggleMenuHandler = () => {
@@ -79,27 +84,34 @@ export class App extends Component {
   }
 
   loadMoreHandler = () => {
-    this.setState({ page: this.state.page + 1 }, async () => await this.callApi())
+    const { page, searchedQuery } = this.state
+    this.setState({
+      page: page + 1
+    }, async () => {
+      if (searchedQuery === '') await this.callApi()
+      else await this.callSearchApi()
+    })
   }
 
   selectQueryHandler = async (query) => {
     this.toggleMenuHandler()
-    this.setState({ searchedQuery: query }, async () => await this.callSearchApi())
+    this.setState({ searchedQuery: query, page: 1 }, async () => await this.callSearchApi())
   }
 
   clearStorageHandler = () => {
     localStorage.clear()
+    this.setState({ searchedQueries: [] })
   }
 
   addItemHandler = async () => {
     const { searchedQueries, searchedQuery } = this.state
     let updateSearchedQueries = [searchedQuery, ...searchedQueries]
-    if(searchedQueries.includes(searchedQuery)) {
+    if (searchedQueries.includes(searchedQuery)) {
       return this.toggleMenuHandler()
     }
 
     if (searchedQueries.length === 5) {
-      updateSearchedQueries = [searchedQuery, ...searchedQueries.splice(-1,1)]
+      updateSearchedQueries = [searchedQuery, ...searchedQueries.splice(-1, 1)]
     }
 
     this.setState({ searchedQueries: updateSearchedQueries })
@@ -141,7 +153,7 @@ export class App extends Component {
   }
 
   render() {
-    const { photos, isModal } = this.state
+    const { photos, isModal, isEmpty } = this.state
 
     return (
       <div className="app">
@@ -150,13 +162,12 @@ export class App extends Component {
           {this.renderSearchSection()}
         </div>
         <div className="bodyContainer">
-          {/* {photos.length
-            ?  */}
-            <ListSection
+          {!isEmpty
+            ? <ListSection
               photos={photos}
               toggleModalHandler={this.toggleModalHandler}
               loadMoreHandler={this.loadMoreHandler} />
-            {/* : <div className="emptyText">No data available</div>} */}
+            : <div className="emptyText">No data available</div>}
         </div>
         {isModal ? this.renderModalSection() : null}
       </div>
