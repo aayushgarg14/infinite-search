@@ -8,3 +8,9 @@
   width: 100%;
   padding-right: 5px
 }
+
+@media (max-width: 500px) {
+  .searchContainer {
+    width: 80%;
+  }
+}

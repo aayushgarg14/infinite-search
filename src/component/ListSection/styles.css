@@ -17,12 +17,9 @@
   }
 
   .imageContainer {
-    /* padding-top: 250px; */
     display: flex;
     flex-wrap: wrap;
     width: 100%;
-    /* padding: 16px; */
-    /* justify-content: space-between */
   }
   
   .imageContainer>img {

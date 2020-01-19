@@ -31,3 +31,14 @@
   height: 40vh;
   align-items: center;
 }
+
+@media (max-width: 480px) {
+  .appHeader>h1 {
+    font-size: 18px;
+  }
+
+  .modalImg {
+    width: 100%;
+  }
+
+}

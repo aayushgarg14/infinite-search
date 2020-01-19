@@ -17,18 +17,27 @@ export class App extends Component {
     searchedQueries: JSON.parse(localStorage.getItem('searchedQueries')) || [],
     visible: false,
     isModal: false,
-    isEmpty: false
+    isEmpty: false,
+    isError: false
   }
 
   constructor(props) {
     super(props)
+
+    /** Event Listener to check for scrolling */
     window.addEventListener("scroll", this.closeHandler);
+
+    /** Debounce function to limit the rate at which the function is fired */
     this.debounceSearch = _.debounce(this.callSearchApi, 300)
   }
 
   async componentDidMount() {
     await this.callApi()
   }
+
+  /**
+   * flickr API calls
+   */
 
   callApi = async () => {
     const { page, photos } = this.state
@@ -40,6 +49,8 @@ export class App extends Component {
           : [...photos, ...response.data.photo],
         isEmpty: (page === 1 && !response.data.photo.length) ? true : false
       })
+    } else {
+      this.setState({ isError: true })
     }
   }
 
@@ -54,23 +65,10 @@ export class App extends Component {
           : [...photos, ...response.data.photo],
         isEmpty: (page === 1 && !response.data.photo.length) ? true : false
       })
+    } else {
+      this.setState({ isError: true })
     }
-
   }
-
-  updateInputHandler = async (value) => {
-    let searchedQuery = value.target.value
-    this.setState({ searchedQuery, page: 1 }, async () => {
-      if (searchedQuery === '') {
-        return this.callApi()
-      }
-      this.debounceSearch()
-    })
-  }
-
-  toggleMenuHandler = () => {
-    this.setState({ visible: !this.state.visible });
-  };
 
   closeHandler = () => {
     const { visible, isModal } = this.state
@@ -78,6 +76,10 @@ export class App extends Component {
       this.setState({ visible: false, isModal: false });
     }
   };
+
+  /**
+   * List Section Function
+   */
 
   toggleModalHandler = (selectedPhoto) => {
     this.setState({ isModal: !this.state.isModal, selectedPhoto })
@@ -90,6 +92,25 @@ export class App extends Component {
     }, async () => {
       if (searchedQuery === '') await this.callApi()
       else await this.callSearchApi()
+    })
+  }
+
+
+  /**
+  * Search Section
+  */
+
+  toggleMenuHandler = () => {
+    this.setState({ visible: !this.state.visible });
+  };
+
+  updateInputHandler = async (value) => {
+    let searchedQuery = value.target.value
+    this.setState({ searchedQuery, page: 1 }, async () => {
+      if (searchedQuery === '') {
+        return this.callApi()
+      }
+      this.debounceSearch()
     })
   }
 
@@ -110,6 +131,7 @@ export class App extends Component {
       return this.toggleMenuHandler()
     }
 
+    /** Restrict the browser history to upto 5 latest searches */
     if (searchedQueries.length === 5) {
       updateSearchedQueries = [searchedQuery, ...searchedQueries.splice(-1, 1)]
     }
@@ -119,9 +141,9 @@ export class App extends Component {
     this.toggleMenuHandler()
   }
 
-  refreshHandler = () => {
-    this.setState({ page: 1 }, async () => await this.callApi())
-  }
+  /**
+   * Render Functions
+   */
 
   renderModalSection() {
     const { farm, server, id, secret } = this.state.selectedPhoto
@@ -133,6 +155,23 @@ export class App extends Component {
           src={`https://farm${farm}.staticflickr.com/${server}/${id}_${secret}.jpg`}
           alt="" />
       </ModalSection>
+    )
+  }
+
+  renderMainSection() {
+    const { photos, isEmpty, isError } = this.state
+
+    return (
+      <div className="bodyContainer">
+        {isError
+        ?  <div className="emptyText">Something went wrong.</div>
+        :!isEmpty
+          ? <ListSection
+            photos={photos}
+            toggleModalHandler={this.toggleModalHandler}
+            loadMoreHandler={this.loadMoreHandler} />
+          : <div className="emptyText">No data available</div>}
+      </div>
     )
   }
 
@@ -153,7 +192,7 @@ export class App extends Component {
   }
 
   render() {
-    const { photos, isModal, isEmpty } = this.state
+    const { isModal } = this.state
 
     return (
       <div className="app">
@@ -161,14 +200,7 @@ export class App extends Component {
           <h1>Scroll the way up!</h1>
           {this.renderSearchSection()}
         </div>
-        <div className="bodyContainer">
-          {!isEmpty
-            ? <ListSection
-              photos={photos}
-              toggleModalHandler={this.toggleModalHandler}
-              loadMoreHandler={this.loadMoreHandler} />
-            : <div className="emptyText">No data available</div>}
-        </div>
+        {this.renderMainSection()}
         {isModal ? this.renderModalSection() : null}
       </div>
     );

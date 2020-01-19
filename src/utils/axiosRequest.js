@@ -15,6 +15,11 @@ export const getSearchedPics = (text, page) => {
 }
 
 
+/**
+ * Generalised function to initiate asychronous request
+ * @param {string} endpoint 
+ * @param {Object} options Explains the type of axios request
+ */
 const callApi = async (endpoint, options = { method: 'GET' }) => {
     let url = `${myInitObject.ROOT_URL}${endpoint}`
     try {
@@ -24,10 +29,7 @@ const callApi = async (endpoint, options = { method: 'GET' }) => {
             headers: { 'Content-Type': 'application/json' }
         })
 
-        let data = response.data
-
-        console.log('Response', data, 'Endpoint', endpoint);
-        
+        const data = response.data
 
         if (data.stat === 'fail') {
             return {

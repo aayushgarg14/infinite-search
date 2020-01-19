@@ -6,13 +6,14 @@ import './styles.css'
 
 export default ({ photos, loadMoreHandler, toggleModalHandler }) => (
   <InfiniteScroll
-    dataLength={photos.length} //This is important field to render the next data
+    dataLength={photos.length}
     next={loadMoreHandler}
     className="imageContainer"
     hasMore={true}
     loader={<div className="centerImageContainer">
       <Spin tip="Loading..." indicator={<Icon type="loading" style={{ fontSize: 36 }} spin />
-      } /></div>}
+      } />
+    </div>}
     endMessage={
       <p style={{ textAlign: 'center' }}>
         <b>Yay! You have seen it all</b>
