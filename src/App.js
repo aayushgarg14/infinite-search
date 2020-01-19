@@ -107,9 +107,11 @@ export class App extends Component {
 
   updateInputHandler = async (value) => {
     let searchedQuery = value.target.value
-    this.setState({ searchedQuery, page: 1 }, async () => {
+    this.setState({ searchedQuery, page: 1, isError: false }, async () => {
       /** If no searched parameter, it will call getRecent api */
       if (searchedQuery === '') {
+        console.log('is it coming here');
+        this.debounceSearch.cancel()
         return this.callApi()
       }
       this.debounceSearch()

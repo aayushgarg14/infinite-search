@@ -31,6 +31,9 @@ const callApi = async (endpoint, options = { method: 'GET' }) => {
 
         const data = response.data
 
+        console.log('data', data, 'url', endpoint);
+        
+
         if (data.stat === 'fail') {
             return {
                 error: true,
