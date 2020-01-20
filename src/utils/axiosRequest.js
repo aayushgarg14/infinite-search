@@ -4,13 +4,13 @@ import { myInitObject } from './constants';
 
 export const getAllPics = (page) => {
     page = page === undefined ? 1 : page
-    let endpoint = `&method=flickr.photos.getRecent&api_key=d6d5c007466cdf789c5c26e7843e82b6&&page=${page}`
+    let endpoint = `&method=flickr.photos.getRecent&api_key=89180934be7e9d73029d5a4621140941&page=${page}`
     return callApi(endpoint)
 }
 
 export const getSearchedPics = (text, page) => {
     page = page === undefined ? 1 : page
-    let endpoint = `&method=flickr.photos.search&api_key=d6d5c007466cdf789c5c26e7843e82b6&text=${text}&page=${page}`
+    let endpoint = `&method=flickr.photos.search&api_key=89180934be7e9d73029d5a4621140941&text=${text}&page=${page}`
     return callApi(endpoint)
 }
 
