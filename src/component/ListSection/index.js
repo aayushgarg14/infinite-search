@@ -1,6 +1,6 @@
 import React from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Spin, Icon } from 'antd';
+import { Spin, Icon, Row, Col } from 'antd';
 
 import './styles.css'
 
@@ -22,10 +22,14 @@ export default ({ photos, loadMoreHandler, toggleModalHandler }) => (
     {photos.map(photo => {
       const { farm, server, id, secret } = photo;
       return (
-        <img
-          onClick={() => toggleModalHandler(photo)}
-          src={`https://farm${farm}.staticflickr.com/${server}/${id}_${secret}.jpg`}
-          alt="" />
+        <Row>
+          <Col span={12}>
+            <img
+              onClick={() => toggleModalHandler(photo)}
+              src={`https://farm${farm}.staticflickr.com/${server}/${id}_${secret}.jpg`}
+              alt="" />
+          </Col>
+        </Row>
       )
     })}
   </InfiniteScroll>
